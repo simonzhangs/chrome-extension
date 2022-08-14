@@ -1,3 +1,68 @@
+/*
+ ** sites对象说明：
+ ** @name: 跳转前的域名
+ ** @include: 
+ ** @selector: 跳转前确认跳转页面-按钮的类名
+ */
+
+const sites = {
+  "c.pc.qq.com": {
+    include: "middlem.html?pfurl=",
+    selector: "#url",
+  },
+  "docs.qq.com": {
+    include: "scenario/link.html?url=",
+    selector: "span.url-src",
+    timeout: 500,
+  },
+  "www.tianyancha.com": {
+    include: "security?target=",
+    selector: "div.security-link",
+  },
+  "jump.bdimg.com": {
+    include: "safecheck/index?url=",
+    selector: "div.warning_info.fl>a",
+  },
+  "jump2.bdimg.com": {
+    include: "safecheck/index?url=",
+    selector: "div.warning_info.fl>a",
+  },
+  "www.chinaz.com": {
+    include: "go.shtml?url=",
+    selector: "div.link-bd__text",
+  },
+  "www.douban.com": {
+    include: "link2/?url=",
+    selector: "a.btn-redir",
+  },
+  "iphone.myzaker.com": {
+    include: "zaker/link.php?",
+    selector: "a.btn",
+  },
+  "www.itdaan.com": {
+    include: "link/",
+    selector: "a.c-footer-a1",
+  },
+  "link.csdn.net": {
+    include: "?target=",
+    selector: "a.loading-btn",
+    timeout: 100,
+  },
+  "link.zhihu.com": {
+    include: "?target=",
+    selector: "a.button"
+  },
+  "link.juejin.cn": {
+    include: "?target=",
+    selector: 'p[style="margin: 0px;"]',
+  },
+  "www.jianshu.com": {
+    include: "go-wild?ac=2&url=",
+    selector: 'div[title^="http"], div[title^="www"]',
+  },
+  // QQ、腾讯文档、天眼查、百度贴吧、站长之家、豆瓣、Zaker、开发者知识库、CSDN、知乎、掘金、简书etc...
+}
+
 window.onload = function () {
   console.log("[BitDance extension] 学生助手插件 - 确认跳转页直接跳转模块加载成功");
 
@@ -5,110 +70,33 @@ window.onload = function () {
     State_DirectUrl
   }) => {
     if (State_DirectUrl) {
+      // 获取跳转前页面的主机名、页面地址
       let locHost = location.host,
         locHref = location.href;
 
-      let methods = {
-        http(link, s = false) {
-          return link.startsWith("http") ?
-            link :
-            (s ? "https://" : "http://") + link;
-        },
-      };
-
-      let RedirectPage = {
-        sites: {
-          "c.pc.qq.com": {
-            include: "middlem.html?pfurl=",
-            selector: "#url",
-          },
-          "docs.qq.com": {
-            include: "scenario/link.html?url=",
-            selector: "span.url-src",
-            timeout: 500,
-          },
-          "www.tianyancha.com": {
-            include: "security?target=",
-            selector: "div.security-link",
-          },
-          "jump.bdimg.com": {
-            include: "safecheck/index?url=",
-            selector: "div.warning_info.fl>a",
-          },
-          "jump2.bdimg.com": {
-            include: "safecheck/index?url=",
-            selector: "div.warning_info.fl>a",
-          },
-          "www.chinaz.com": {
-            include: "go.shtml?url=",
-            selector: "div.link-bd__text",
-          },
-          "www.douban.com": {
-            include: "link2/?url=",
-            selector: "a.btn-redir",
-          },
-          "iphone.myzaker.com": {
-            include: "zaker/link.php?",
-            selector: "a.btn",
-          },
-          "www.itdaan.com": {
-            include: "link/",
-            selector: "a.c-footer-a1",
-          },
-          "link.csdn.net": {
-            include: "?target=",
-            selector: "a.loading-btn",
-            timeout: 100,
-          },
-          "link.zhihu.com": {
-            include: "?target=",
-            selector: "a.button"
-          },
-          "link.juejin.cn": {
-            include: "?target=",
-            selector: 'p[style="margin: 0px;"]',
-          },
-          "www.jianshu.com": {
-            include: "go-wild?ac=2&url=",
-            selector: 'div[title^="http"], div[title^="www"]',
-          },
-          // QQ、腾讯文档、天眼查、百度贴吧、站长之家、豆瓣、Zaker、开发者知识库、CSDN、知乎、掘金、简书etc...
-        },
-
-        redirect(host) {
-          let site = this.sites[host];
-          if (site) {
-            let include = host + "/" + site.include;
-            if (locHref.includes(include) || site.match && locHref.match(site.match)) {
-
-              let target = document.querySelector(site.selector);
-              if (target.length) location.replace(target.href || target.innerText);
-
-            }
-          }
-        }
+      try {
+        url(locHref, locHost);
+      } catch {
+        console.log('[BitDance extension] 学生助手插件 - 当前没有可自动跳转网页或当前页面不支持链接自动跳转')
       }
 
-      setTimeout(url(), 200);
-
-      function url() {
-        let flag = false;
-        if (locHref.includes(RedirectPage.sites[locHost].include)) {
-          locHref = locHref.split(RedirectPage.sites[locHost].include);
-          flag = true;
+      function url(locHref, locHost) {
+        // 跳转前页面的地址后缀带有的重定向网址
+        const splitFlag = sites[locHost] && sites[locHost].include;
+        // 跳转前页面中点击继续访问DOM的选择器，便于获取其中的url
+        const selector = sites[locHost] && sites[locHost].selector;
+        if (!splitFlag && !selector) {
+          console.log('[BitDance extension] 学生助手插件 - 当前没有可自动跳转网页或当前页面不支持链接自动跳转！！！');
+          return;
         }
-
-        if (flag) {
+        if (splitFlag) {
+          locHref = locHref.split(splitFlag);
           location.replace(decodeURIComponent(locHref[1]));
-        } else {
-          if (RedirectPage.sites[locHost].selector) {
-            let target = document.querySelector(RedirectPage.sites[locHost].selector);
-            location.replace(target.href || target.innerText)
-          }
+        } else if (selector) {
+          let target = document.querySelector(sites[locHost].selector);
+          location.replace(target.href || target.innerText)
         }
       }
-
-      //两种方案 默认不阻止重定向 阻止重定向直接跳转
     }
   })
 }
