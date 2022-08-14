@@ -50,6 +50,14 @@ GitHub仓库：https://github.com/bitdance-team/chrome-extension
 
 朱穆峰：护眼模式，夜间模式
 
+## 插件原理
+
+### direct url - 确认页链接自动跳转
+
+在大型社区网站，比如某乎或某金，在点击外链时候，会多弹出一个安全页，还需要再额外点击一次。而此功能就是基于上述情景开发的，通过获取该安全页url中后缀携带的就是跳转的链接，或者获取安全页面DOM节点来获取要跳转的链接，利用`location.replace`方法进行页面跳转。
+
+实现方法是通过浏览器的`location`接口来进行操作，具体学习见[Location - MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Location)
+
 ## 许可证 License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for the full license text.
