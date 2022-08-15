@@ -58,6 +58,19 @@ GitHub仓库：https://github.com/bitdance-team/chrome-extension
 
 实现方法是通过浏览器的`location`接口来进行操作，具体学习见[Location - MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Location)
 
+### 自动展开全文
+
+获取遮罩层的DOM节点，移除该DOM节点；同时获取内容区域的DOM节点，其中包括可视和非可视区，一般非可视区是通过CSS样式来实现隐藏的，移除该类即可。
+
+### 鼠标点击特效、鼠标样式
+
+- 获取鼠标点击时的坐标点，添加对应的特效DOM节点和CSS样式，通过`requireAnimation`来进行特效动画绘制。
+- 鼠标样式：利用CSS设置cursor的url属性，更换为对应的base64图片即可。
+
+### 番茄钟
+
+利用番茄钟页面和浏览器`background.js`之间通信，通信方式为`chrome.runtime.sendMessage`和`chrome.runtime.onMessage`；通过传递pomoData对象中状态信息和计时信息来同步番茄钟信息。
+
 ## 许可证 License
 
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for the full license text.
